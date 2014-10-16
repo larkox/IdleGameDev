@@ -1,0 +1,16 @@
+.income_box {
+    float: left;
+    border: 2px solid;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 5px;
+}
+
+div {
+    overflow: auto;
+}
+
+#generalContent {
+    width: 500px;
+    max-width: 500px;
+}

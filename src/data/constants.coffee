@@ -19,24 +19,33 @@ constants = {
             "h": 100,
         },
     },
-    "INCOMES": {
-        "freelancing": {
+    "INCOMES": [
+        {
+            "name": "freelancing",
             "left": 10,
             "each": 10,
-            "income": 0.1,
+            "income": 0,
             "level": 0,
+            "cost": 1,
+            "base_income": 0.1,
         },
-        "engine": {
-            "left": 20,
-            "each": 20,
-            "income": 0.20,
+        {
+            "name": "engine",
+            "left": 25,
+            "each": 25,
+            "income": 0,
             "level": 0,
+            "cost": 10,
+            "base_income": 1,
         },
-        "game dev": {
-            "left": 30,
+        {
+            "name": "game dev",
+            "left": 50,
             "each": 50,
-            "income": 10.30,
+            "income": 0,
             "level": 0,
+            "cost": 100,
+            "base_income": 10,
         },
-    },
+    ],
 }
