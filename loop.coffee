@@ -1,8 +1,8 @@
 class Loop
-    constructor: (environment) ->
+    constructor: () ->
         @frame_time = 1000/32
     isReady: -> true
-    animate: (environment) ->
+    animate: () ->
     onKeyDown: (event, environment) ->
     onKeyUp: (event, environment) ->
     onMouseDown: (event, environment) ->
@@ -10,12 +10,7 @@ class Loop
     onMouseMove: (event, environment) ->
 
 class GeneralGameScreenLoop extends Loop
-    constructor: (environment, @state) ->
-        super(environment)
-    animate: (environment) ->
-        for key, value of @state.income
-            value.left -= 1
-            if value.left <= 0
-                @state.money += value.income
-                value.left = value.each
-        $("#money").text(@state.money.toFixed(2))
+    constructor: (@state) ->
+        super()
+    animate: (environment, delta) ->
+        @state.animate(environment, delta)

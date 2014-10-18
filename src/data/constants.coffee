@@ -22,30 +22,30 @@ constants = {
     "INCOMES": [
         {
             "name": "freelancing",
-            "left": 10,
-            "each": 10,
-            "income": 0,
-            "level": 0,
+            "each": 100,
             "cost": 1,
             "base_income": 0.1,
         },
         {
             "name": "engine",
-            "left": 25,
-            "each": 25,
-            "income": 0,
-            "level": 0,
+            "each": 1000,
             "cost": 10,
             "base_income": 1,
         },
         {
             "name": "game dev",
-            "left": 50,
-            "each": 50,
-            "income": 0,
-            "level": 0,
+            "each": 5000,
             "cost": 100,
             "base_income": 10,
         },
     ],
+    "STAFF": [
+        {
+            "name": "Billy",
+            "scope": "everything",
+            "description": "Can do a little of everything. Improve every income."
+            "base_effect": 0.01,
+            "cost": 500,
+        },
+    ]
 }
