@@ -1,6 +1,13 @@
 .income_box {
     float: left;
-    border: 2px solid;
+    border: 2px solid black;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 5px;
+}
+.staff_box {
+    float: left;
+    border: 2px solid black;
     border-radius: 5px;
     margin: 5px;
     padding: 5px;
@@ -10,7 +17,19 @@ div {
     overflow: auto;
 }
 
-#generalContent {
+#ui div {
+    float: left;
+    margin: 10px;
+}
+
+#buttons div {
+    float: left;
+    margin: 10px;
+    padding: 5px;
+    border: 2px solid black;
+}
+
+.main_frame {
     width: 500px;
     max-width: 500px;
 }

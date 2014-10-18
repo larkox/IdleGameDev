@@ -9,14 +9,19 @@
         <script src="app.js"></script>
     </head>
     <body onload="new Environment()">
-        <div width="500" id="base">
-            <div id="ui">
+        <div class="main_frame" id="base">
+            <div class="main_frame" id="ui">
                 <div>Money: <span id="money">0</span></div>
                 <div>MpS: <span id="mps">0</span></div>
+                <div>Frame Rate: <span id="fps">0</span></div>
             </div>
-            <div id="butons">
+            <div class="main_frame" id="buttons">
+                <div id="buttons_incomes">Incomes</div>
+                <div id="buttons_staff">Staff</div>
             </div>
-            <div width="500" id="generalContent">
+            <div class="main_frame" id="incomes_frame">
+            </div>
+            <div hidden="hidden" class="main_frame" id="staff_frame">
             </div>
         </div>
     </body>
