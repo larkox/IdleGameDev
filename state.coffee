@@ -90,6 +90,9 @@ class State
             element.click(( (state) ->
                 -> state.levelUpIncome(parseInt($(this)[0].id.split("_")[1]))
                 )(this))
+            element.on("tap", ( (state) ->
+                -> state.levelUpIncome(parseInt($(this)[0].id.split("_")[1]))
+                )(this))
             $("div#incomes_frame").append(element)
         $("div#income_0").fadeIn(1000)
         for staff_def, index in @staff
@@ -107,6 +110,9 @@ class State
                 "hidden": "hidden",
             })
             element.click(( (state) ->
+                -> state.levelUpStaff(parseInt($(this)[0].id.split("_")[1]))
+                )(this))
+            element.on("tap", ( (state) ->
                 -> state.levelUpStaff(parseInt($(this)[0].id.split("_")[1]))
                 )(this))
             $("div#staff_frame").append(element)
