@@ -17,6 +17,7 @@ class Environment
         @loop_to_change = ->
         $("div#buttons div").click(@getClickFunction())
         $("div#buttons div").on("touch", @getClickFunction())
+        @money_span = $("span#money")
         setTimeout((=> @tick()), @loop.frame_time)
     getClickFunction: ->
         ((environment) ->
@@ -26,9 +27,11 @@ class Environment
                     switch environment.current
                         when "buttons_incomes" then $("#incomes_frame").slideToggle(1000).queue()
                         when "buttons_staff" then $("#staff_frame").slideToggle(1000).queue()
+                        when "buttons_marketing" then $("#marketing_frame").slideToggle(1000).queue()
                     switch id
                         when "buttons_incomes" then $("#incomes_frame").slideToggle(1000).queue()
                         when "buttons_staff" then $("#staff_frame").slideToggle(1000).queue()
+                        when "buttons_marketing" then $("#marketing_frame").slideToggle(1000).queue()
                     environment.current = id
             )
         )(this)

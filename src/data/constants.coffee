@@ -24,18 +24,18 @@ constants = {
             "name": "freelancing",
             "each": 100,
             "cost": 1,
-            "base_income": 0.1,
+            "base_income": 0.01,
         },
         {
             "name": "engine",
             "each": 1000,
-            "cost": 10,
-            "base_income": 1,
+            "cost": 5,
+            "base_income": 0.5,
         },
         {
             "name": "game dev",
             "each": 5000,
-            "cost": 100,
+            "cost": 50,
             "base_income": 10,
         },
     ],
@@ -47,5 +47,14 @@ constants = {
             "base_effect": 0.01,
             "cost": 500,
         },
-    ]
+    ],
+    "MARKETING": [
+        {
+            "name": "Games All Around",
+            "scope": "everything",
+            "description": "Including adds here you may find more jobs from any field",
+            "base_effect": 0.99,
+            "cost": 1,
+        },
+    ],
 }
