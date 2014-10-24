@@ -143,6 +143,7 @@ class State
             element = $("<div>", {
                 "class": "income_box",
                 "id": "income_#{index}",
+                "title": income_def.description,
                 "html": text,
                 "hidden": "hidden",
             })
@@ -160,12 +161,21 @@ class State
         for staff_def, index in @staff
             text = "#{staff_def.name}<br />"
             text += "Level: <span class=\"level\">#{staff_def.level}</span><br />"
-            text += "Description: <span class=\"description\">#{staff_def.description}</span><br />"
+            if staff_def.scope == "everything"
+                scope = "everything"
+            else
+                scope = ""
+                for income, index in staff_def.scope
+                    scope += @income[income].name
+                    unless index == staff_def.scope.length - 1 then scope += ", "
+
+            text += "Scope: <span class=\"scope\">#{scope}</span><br />"
             text += "Current: <span class=\"current\">#{writeNumber(staff_def.current)}</span>%<br />"
             text += "Cost: <span class=\"cost\">#{writeNumber(staff_def.cost)}</span><br />"
             element = $("<div>", {
                 "class": "staff_box",
                 "id": "staff_#{index}",
+                "title": staff_def.description,
                 "html": text,
                 "hidden": "hidden",
             })
@@ -184,12 +194,20 @@ class State
         for marketing_def, index in @marketing
             text = "#{marketing_def.name}<br />"
             text += "Level: <span class=\"level\">#{marketing_def.level}</span><br />"
-            text += "Description: <span class=\"description\">#{marketing_def.description}</span><br />"
+            if marketing_def.scope == "everything"
+                scope = "everything"
+            else
+                scope = ""
+                for income, index in marketing_def.scope
+                    scope += @income[income].name
+                    unless index == marketing_def.scope.length - 1 then scope += ", "
+            text += "Scope: <span class=\"scope\">#{scope}</span><br />"
             text += "Current: <span class=\"current\">#{writeNumber(marketing_def.current)}</span>%<br />"
             text += "Cost: <span class=\"cost\">#{writeNumber(marketing_def.cost)}</span><br />"
             element = $("<div>", {
                 "class": "marketing_box",
                 "id": "marketing_#{index}",
+                "title": marketing_def.description,
                 "html": text,
                 "hidden": "hidden",
             })
