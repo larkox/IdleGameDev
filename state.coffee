@@ -1,31 +1,37 @@
 class State
     constructor: ->
-        @money = 1
+        if localStorage.money?
+            @money = JSON.parse(localStorage.money)
+        else
+            @money = 1
+        if localStorage.levels?
+            @levels = JSON.parse(localStorage.levels)
+            load = true
+        else
+            @levels = {}
+            @levels.version = 1
+            @levels.income = []
+            @levels.staff = []
+            @levels.marketing = []
+            load = false
         @income = []
         for income_def, index in constants.INCOMES
             @income[index] = {}
             for attribute_name, attribute of income_def
                 @income[index][attribute_name] = attribute
-            @income[index].current_each = Math.ceil(@income[index].each)
-            @income[index].powerup = 0
-            @income[index].reduction = 1
-            @income[index].level = 0
-            @income[index].income = 0
-            @income[index].left = @income[index].each
+            @initIncome(index, load)
         @staff = []
         for staff_def, index in constants.STAFF
             @staff[index] = {}
             for attribute_name, attribute of staff_def
                 @staff[index][attribute_name] = attribute
-            @staff[index].current = 0
-            @staff[index].level = 0
+            @initStaff(index, load)
         @marketing = []
         for marketing_def, index in constants.MARKETING
             @marketing[index] = {}
             for attribute_name, attribute of marketing_def
                 @marketing[index][attribute_name] = attribute
-            @marketing[index].current = 1
-            @marketing[index].level = 0
+            @initMarketing(index, load)
         @setup()
 
 
@@ -55,6 +61,7 @@ class State
         if @income[income_id].cost <= @money
             @money -= @income[income_id].cost
             @income[income_id].level += 1
+            @levels.income[income_id] += 1
             @income[income_id].cost += @income[income_id].cost * 0.15
             @income[income_id].income += @income[income_id].base_income
             @updateIncome(income_id)
@@ -66,6 +73,7 @@ class State
         if @staff[staff_id].cost <= @money
             @money -= @staff[staff_id].cost
             @staff[staff_id].level += 1
+            @levels.staff[staff_id] += 1
             @staff[staff_id].cost += @staff[staff_id].cost * 0.50
             @staff[staff_id].current += @staff[staff_id].base_effect
             if @staff[staff_id].scope == "everything"
@@ -81,6 +89,7 @@ class State
         if @marketing[marketing_id].cost <= @money
             @money -= @marketing[marketing_id].cost
             @marketing[marketing_id].level += 1
+            @levels.marketing[marketing_id] += 1
             @marketing[marketing_id].cost += @marketing[marketing_id].cost * 1.00
             @marketing[marketing_id].current = @marketing[marketing_id].current * @marketing[marketing_id].base_effect
             if @marketing[marketing_id].scope == "everything"
@@ -146,8 +155,8 @@ class State
                 )(this))
             income_def.div = element
             container.append(element)
-        $("div#income_0").fadeIn(1000)
-
+            if income_def.level > 0 or index == 0 or index > 0 and @income[index - 1].level > 0
+                income_def.div.fadeIn(1000)
         container = $("div#staff_frame")
         for staff_def, index in @staff
             text = "#{staff_def.name}<br />"
@@ -171,7 +180,8 @@ class State
                 )(this))
             staff_def.div = element
             container.append(element)
-        $("div#staff_0").fadeIn(1000)
+            if staff_def.level > 0 or index == 0 or index > 0 and @staff[index - 1].level > 0
+                staff_def.div.fadeIn(1000)
 
         container = $("div#marketing_frame")
         for marketing_def, index in @marketing
@@ -196,5 +206,51 @@ class State
                 )(this))
             marketing_def.div = element
             container.append(element)
-        $("div#marketing_0").fadeIn(1000)
-
+            if marketing_def.level > 0 or index == 0 or index > 0 and @marketing[index - 1].level > 0
+                marketing_def.div.fadeIn(1000)
+    initIncome: (index, load) ->
+        if load
+            if @levels.version == 1
+                @income[index].level = @levels.income[index]
+                @income[index].income = @income[index].level * @income[index].base_income
+                @income[index].cost = @income[index].cost * (1.15 ** @income[index].level)
+                @income[index].current_each = Math.ceil(@income[index].each)
+                @income[index].left = @income[index].current_each
+                @income[index].powerup = 0
+                @income[index].reduction = 1
+        else
+            @income[index].level = 0
+            @levels.income[index] = 0
+            @income[index].income = 0
+            @income[index].current_each = Math.ceil(@income[index].each)
+            @income[index].left = @income[index].current_each
+            @income[index].powerup = 0
+            @income[index].reduction = 1
+    initStaff: (index, load) ->
+        if load
+            if @levels.version == 1
+                @staff[index].level = @levels.staff[index]
+                @staff[index].cost = @staff[index].cost * (1.50 ** @staff[index].level)
+                @staff[index].current = @staff[index].base_effect * @staff[index].level
+                if @staff[index].scope == "everything"
+                    for income in @income
+                        income.powerup += @staff[index].base_effect
+        else
+            @staff[index].current = 0
+            @staff[index].level = 0
+            @levels.staff[index] = 0
+    initMarketing: (index, load) ->
+        if load
+            if @levels.version == 1
+                @marketing[index].level = @levels.marketing[index]
+                @marketing[index].cost = @marketing[index].cost * (2 ** @marketing[index].level)
+                @marketing[index].current = 1 * (@marketing[index].base_effect ** @marketing[index].level)
+                if @marketing[index].scope == "everything"
+                    for income in @income
+                        income.reduction = income.reduction * @marketing[index].current
+                        income.current_each = Math.ceil(income.each * income.reduction)
+                        if income.current_each == 0 then income.current_each = Number.MIN_VALUE
+        else
+             @marketing[index].level = 0
+             @levels.marketing[index] = 0
+             @marketing[index].current = 0

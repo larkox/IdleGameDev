@@ -1,6 +1,7 @@
 class Environment
     constructor: ->
         @loop = new GeneralGameScreenLoop(new State(this))
+        @since_saved = 0
         @loading = true
         @constants = constants
         @keys = {}
@@ -18,6 +19,7 @@ class Environment
         $("div#buttons div").click(@getClickFunction())
         $("div#buttons div").on("touch", @getClickFunction())
         @money_span = $("span#money")
+        @fps_span = $("span#fps")
         setTimeout((=> @tick()), @loop.frame_time)
     getClickFunction: ->
         ((environment) ->
@@ -43,7 +45,11 @@ class Environment
             delta = @time
             @time = new Date()
             delta = @time - delta
-            $("#fps").text((1000 / delta).toFixed(2))
+            @since_saved += delta
+            if @since_saved > 10000
+                @since_saved = 0
+                @save()
+            @fps_span.text((1000 / delta).toFixed(2))
             @loop.animate(this, delta)
             if @change_loop
                 @loop = @loop_to_change()
@@ -66,3 +72,6 @@ class Environment
     onMouseMove: (event) ->
         if !@loading
             @loop.onMouseMove(event, this)
+    save: ->
+        localStorage.money = JSON.stringify(@loop.state.money)
+        localStorage.levels = JSON.stringify(@loop.state.levels)
