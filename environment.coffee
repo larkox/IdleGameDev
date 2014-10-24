@@ -18,8 +18,13 @@ class Environment
         @loop_to_change = ->
         $("div#buttons div").click(@getClickFunction())
         $("div#buttons div").on("touch", @getClickFunction())
+        $("div#control_save").click(=> @save())
+        $("div#control_save").on("touch", => @save())
+        $("div#control_delete").click(=> @delete())
+        $("div#control_delete").on("touch", => @delete())
         @money_span = $("span#money")
         @fps_span = $("span#fps")
+        @info_div = $("div#info")
         setTimeout((=> @tick()), @loop.frame_time)
     getClickFunction: ->
         ((environment) ->
@@ -75,3 +80,10 @@ class Environment
     save: ->
         localStorage.money = JSON.stringify(@loop.state.money)
         localStorage.levels = JSON.stringify(@loop.state.levels)
+        @info_div.text("Game Saved");
+        @info_div.fadeIn(1000).fadeOut(1000)
+    delete: ->
+        if confirm("Do you really want to delete all your progress?")
+            localStorage.removeItem("money")
+            localStorage.removeItem("levels")
+            location.reload()

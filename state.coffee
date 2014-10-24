@@ -44,9 +44,8 @@ class State
                 @money = Math.min(Number.MAX_VALUE, @money + times*quantity)
                 left = definition.left %% definition.current_each
                 if left == 0 then left = definition.current_each
-                #left = definition.left + definition.current_each * times
                 definition.left = Math.min(Number.MAX_VALUE, left)
-        environment.money_span.text(@money.toPrecision(4))
+        environment.money_span.text(writeNumber(@money))
         {object, name} = switch environment.current
             when "buttons_incomes" then {"object": @income, "name": "income"}
             when "buttons_staff" then {"object": @staff, "name": "staff"}
@@ -54,8 +53,10 @@ class State
         for definition, index in object
             if @money >= definition.cost
                 definition.div.css("background-color", "green")
+                definition.div.css("color", "black")
             else
                 definition.div.css("background-color", "red")
+                definition.div.css("color", "white")
 
     levelUpIncome: (income_id) ->
         if @income[income_id].cost <= @money
@@ -108,42 +109,40 @@ class State
         for definition in @income
             acum += definition.income * (1 + definition.powerup) / definition.current_each
         acum = Math.min(Number.MAX_VALUE, acum * 1000)
-        $("span#mps").text(acum.toPrecision(4))
+        $("span#mps").text(writeNumber(acum))
 
     updateIncome: (income_id) ->
         div = @income[income_id].div
         div.find(".level").text(@income[income_id].level)
-        div.find(".income").text((@income[income_id].income * (1 + @income[income_id].powerup)).toPrecision(4))
-        div.find(".powerup").text(@income[income_id].powerup.toPrecision(4))
-        div.find(".each").text((@income[income_id].current_each / 1000).toPrecision(4))
-        div.find(".cost").text(@income[income_id].cost.toPrecision(4))
+        div.find(".income").text(writeNumber(@income[income_id].income * (1 + @income[income_id].powerup)))
+        div.find(".powerup").text(writeNumber(@income[income_id].powerup))
+        div.find(".each").text(writeNumber(@income[income_id].current_each / 1000))
+        div.find(".cost").text(writeNumber(@income[income_id].cost))
 
 
     updateStaff: (staff_id) ->
         div = @staff[staff_id].div
         div.find(".level").text(@staff[staff_id].level)
-        div.find(".current").text(@staff[staff_id].current.toPrecision(4))
-        div.find(".cost").text(@staff[staff_id].cost.toPrecision(4))
+        div.find(".current").text(writeNumber(@staff[staff_id].current))
+        div.find(".cost").text(writeNumber(@staff[staff_id].cost))
 
     updateMarketing: (marketing_id, div) ->
         div = @marketing[marketing_id].div
         div.find(".level").text(@marketing[marketing_id].level)
-        div.find(".current").text(@marketing[marketing_id].current.toPrecision(4))
-        div.find(".cost").text(@marketing[marketing_id].cost.toPrecision(4))
+        div.find(".current").text(writeNumber(@marketing[marketing_id].current))
+        div.find(".cost").text(writeNumber(@marketing[marketing_id].cost))
 
     setup: ->
         container = $("div#incomes_frame")
         for income_def, index in @income
             text = "#{income_def.name}<br />"
             text += "Level: <span class=\"level\">#{income_def.level}</span><br />"
-            text += "Income: <span class=\"income\">#{income_def.income}</span><br />"
-            text += "Each: <span class=\"each\">#{(income_def.each / 1000).toPrecision(4)}</span>s<br />"
-            text += "Cost: <span class=\"cost\">#{income_def.cost}</span><br />"
+            text += "Income: <span class=\"income\">#{writeNumber(income_def.income)}</span><br />"
+            text += "Each: <span class=\"each\">#{writeNumber(income_def.each / 1000)}</span>s<br />"
+            text += "Cost: <span class=\"cost\">#{writeNumber(income_def.cost)}</span><br />"
             element = $("<div>", {
                 "class": "income_box",
                 "id": "income_#{index}",
-                "width": 200,
-                "height": 100,
                 "html": text,
                 "hidden": "hidden",
             })
@@ -162,13 +161,11 @@ class State
             text = "#{staff_def.name}<br />"
             text += "Level: <span class=\"level\">#{staff_def.level}</span><br />"
             text += "Description: <span class=\"description\">#{staff_def.description}</span><br />"
-            text += "Current: <span class=\"current\">#{(staff_def.current).toPrecision(4)}</span>%<br />"
-            text += "Cost: <span class=\"cost\">#{staff_def.cost}</span><br />"
+            text += "Current: <span class=\"current\">#{writeNumber(staff_def.current)}</span>%<br />"
+            text += "Cost: <span class=\"cost\">#{writeNumber(staff_def.cost)}</span><br />"
             element = $("<div>", {
                 "class": "staff_box",
                 "id": "staff_#{index}",
-                "width": 200,
-                "height": 100,
                 "html": text,
                 "hidden": "hidden",
             })
@@ -188,13 +185,11 @@ class State
             text = "#{marketing_def.name}<br />"
             text += "Level: <span class=\"level\">#{marketing_def.level}</span><br />"
             text += "Description: <span class=\"description\">#{marketing_def.description}</span><br />"
-            text += "Current: <span class=\"current\">#{(marketing_def.current).toPrecision(4)}</span>%<br />"
-            text += "Cost: <span class=\"cost\">#{marketing_def.cost}</span><br />"
+            text += "Current: <span class=\"current\">#{writeNumber(marketing_def.current)}</span>%<br />"
+            text += "Cost: <span class=\"cost\">#{writeNumber(marketing_def.cost)}</span><br />"
             element = $("<div>", {
                 "class": "marketing_box",
                 "id": "marketing_#{index}",
-                "width": 200,
-                "height": 100,
                 "html": text,
                 "hidden": "hidden",
             })
@@ -254,3 +249,20 @@ class State
              @marketing[index].level = 0
              @levels.marketing[index] = 0
              @marketing[index].current = 0
+
+writeNumber = (number) ->
+    unit = 0
+    while number > 1000 or unit == 8
+        number = number / 1000
+        unit += 1
+    expr = switch unit
+        when 0 then ""
+        when 1 then "k"
+        when 2 then "M"
+        when 3 then "G"
+        when 4 then "T"
+        when 5 then "P"
+        when 6 then "E"
+        when 7 then "Z"
+        when 8 then "Y"
+    number.toFixed(2) + expr
