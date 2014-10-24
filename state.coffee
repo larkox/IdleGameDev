@@ -81,6 +81,10 @@ class State
                 for income, index in @income
                     income.powerup += @staff[staff_id].base_effect
                     @updateIncome(index)
+            else
+                for id in @staff[staff_id].scope
+                    @income[id].powerup += @staff[staff_id].base_effect
+                    @updateIncome(id)
             @updateStaff(staff_id)
             @updateMpS()
             if @staff[staff_id].level == 1 and @staff.length > staff_id + 1
@@ -99,6 +103,14 @@ class State
                     income.current_each = Math.ceil(income.each * income.reduction)
                     if income.current_each == 0 then income.current_each = Number.MIN_VALUE
                     @updateIncome(index)
+            else
+                for id in @marketing[marketing_id].scope
+                    @income[id].reduction = @income[id].reduction * @marketing[marketing_id].base_effect
+                    @income[id].current_each = Math.ceil(@income[id].each * @income[id].reduction)
+                    if @income[id].current_each == 0 then @income[id].current_each = Number.MIN_VALUE
+                    @updateIncome(id)
+
+
             @updateMarketing(marketing_id)
             @updateMpS()
             if @marketing[marketing_id].level == 1 and @marketing.length > marketing_id + 1
@@ -123,13 +135,13 @@ class State
     updateStaff: (staff_id) ->
         div = @staff[staff_id].div
         div.find(".level").text(@staff[staff_id].level)
-        div.find(".current").text(writeNumber(@staff[staff_id].current))
+        div.find(".current").text(writeNumber(@staff[staff_id].current * 100))
         div.find(".cost").text(writeNumber(@staff[staff_id].cost))
 
     updateMarketing: (marketing_id, div) ->
         div = @marketing[marketing_id].div
         div.find(".level").text(@marketing[marketing_id].level)
-        div.find(".current").text(writeNumber(@marketing[marketing_id].current))
+        div.find(".current").text(writeNumber(@marketing[marketing_id].current * 100))
         div.find(".cost").text(writeNumber(@marketing[marketing_id].cost))
 
     setup: ->
@@ -145,7 +157,6 @@ class State
                 "id": "income_#{index}",
                 "title": income_def.description,
                 "html": text,
-                "hidden": "hidden",
             })
             element.click(( (state) ->
                 -> state.levelUpIncome(parseInt($(this)[0].id.split("_")[1]))
@@ -153,6 +164,8 @@ class State
             element.on("tap", ( (state) ->
                 -> state.levelUpIncome(parseInt($(this)[0].id.split("_")[1]))
                 )(this))
+            element.css("display","none")
+            element.hide()
             income_def.div = element
             container.append(element)
             if income_def.level > 0 or index == 0 or index > 0 and @income[index - 1].level > 0
@@ -165,19 +178,18 @@ class State
                 scope = "everything"
             else
                 scope = ""
-                for income, index in staff_def.scope
+                for income, scope_index in staff_def.scope
                     scope += @income[income].name
-                    unless index == staff_def.scope.length - 1 then scope += ", "
+                    unless scope_index == staff_def.scope.length - 1 then scope += ", "
 
             text += "Scope: <span class=\"scope\">#{scope}</span><br />"
-            text += "Current: <span class=\"current\">#{writeNumber(staff_def.current)}</span>%<br />"
+            text += "Current: <span class=\"current\">#{writeNumber(staff_def.current * 100)}</span>%<br />"
             text += "Cost: <span class=\"cost\">#{writeNumber(staff_def.cost)}</span><br />"
             element = $("<div>", {
                 "class": "staff_box",
                 "id": "staff_#{index}",
                 "title": staff_def.description,
                 "html": text,
-                "hidden": "hidden",
             })
             element.click(( (state) ->
                 -> state.levelUpStaff(parseInt($(this)[0].id.split("_")[1]))
@@ -185,6 +197,8 @@ class State
             element.on("tap", ( (state) ->
                 -> state.levelUpStaff(parseInt($(this)[0].id.split("_")[1]))
                 )(this))
+            element.css("display","none")
+            element.hide()
             staff_def.div = element
             container.append(element)
             if staff_def.level > 0 or index == 0 or index > 0 and @staff[index - 1].level > 0
@@ -198,18 +212,17 @@ class State
                 scope = "everything"
             else
                 scope = ""
-                for income, index in marketing_def.scope
+                for income, scope_index in marketing_def.scope
                     scope += @income[income].name
-                    unless index == marketing_def.scope.length - 1 then scope += ", "
+                    unless scope_index == marketing_def.scope.length - 1 then scope += ", "
             text += "Scope: <span class=\"scope\">#{scope}</span><br />"
-            text += "Current: <span class=\"current\">#{writeNumber(marketing_def.current)}</span>%<br />"
+            text += "Current: <span class=\"current\">#{writeNumber(marketing_def.current * 100)}</span>%<br />"
             text += "Cost: <span class=\"cost\">#{writeNumber(marketing_def.cost)}</span><br />"
             element = $("<div>", {
                 "class": "marketing_box",
                 "id": "marketing_#{index}",
                 "title": marketing_def.description,
                 "html": text,
-                "hidden": "hidden",
             })
             element.click(( (state) ->
                 -> state.levelUpMarketing(parseInt($(this)[0].id.split("_")[1]))
@@ -217,6 +230,8 @@ class State
             element.on("tap", ( (state) ->
                 -> state.levelUpMarketing(parseInt($(this)[0].id.split("_")[1]))
                 )(this))
+            element.css("display","none")
+            element.hide()
             marketing_def.div = element
             container.append(element)
             if marketing_def.level > 0 or index == 0 or index > 0 and @marketing[index - 1].level > 0
@@ -248,6 +263,9 @@ class State
                 if @staff[index].scope == "everything"
                     for income in @income
                         income.powerup += @staff[index].base_effect
+                else
+                    for id in @staff[index].scope
+                        @income[id].powerup += @staff[index].base_effect
         else
             @staff[index].current = 0
             @staff[index].level = 0
@@ -263,6 +281,11 @@ class State
                         income.reduction = income.reduction * @marketing[index].current
                         income.current_each = Math.ceil(income.each * income.reduction)
                         if income.current_each == 0 then income.current_each = Number.MIN_VALUE
+                else
+                    for id in @marketing[index].scope
+                        @income[id].reduction = @income[id].reduction * @marketing[index].current
+                        @income[id].current_each = Math.ceil(@income[id].each * @income[id].reduction)
+                        if @income[id].current_each == 0 then @income[id].current_each = Number.MIN_VALUE
         else
              @marketing[index].level = 0
              @levels.marketing[index] = 0
